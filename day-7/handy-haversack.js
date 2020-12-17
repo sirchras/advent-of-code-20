@@ -10,37 +10,45 @@ let bags = {};
 
 rl.on("line", (line) => {
   let [bag, contents] = line.split(" contain ");
+
   bag = bag.substring(0, bag.length-5);
+  contents = parseContents(contents);
 
-  switch(contents) {
-    case "no other bags.":
-      contents = [];
-      break;
-    default:
-      contents = contents.split(", ");
-      contents.forEach((str, idx) => {
-        contents[idx] = str.split(" ")
-          .slice(1, 3)
-          .join(" ");
-      });
-      break;
-  }
-
-  // bags[bag] = { contents: contents };
   bags[bag] = contents;
-  // console.log(bags[bag]);
 }).on("close", () => {
   let shinyCount = 0;
+
   for(bag in bags) {
     if(containShinyGoldBag(bag)) shinyCount++;
   }
+
   console.log(shinyCount);
-  console.log("done?");
+  console.log(countBagContents());
 });
 
+function parseContents(contentStr) {
+  let contents = {};
+
+  switch(contentStr) {
+    case "no other bags.":
+      break;
+    default:
+      contentStr.split(", ")
+        .forEach((str, idx) => {
+          let arr = str.split(" ");
+          let bag = arr.slice(1, 3)
+            .join(" ");
+          let num = Number(arr[0]);
+          contents[bag] = num;
+        });
+      break;
+  }
+
+  return contents;
+}
+
 function containShinyGoldBag(bag) {
-  // let contents = bags[bag].contents;
-  let contents = bags[bag];
+  let contents = Object.keys(bags[bag]);
   if(contents.includes("shiny gold")) return true;
 
   for(let i = 0; i < contents.length; i++) {
@@ -49,4 +57,16 @@ function containShinyGoldBag(bag) {
     }
   }
   return false;
+}
+
+function countBagContents(bagName = "shiny gold") {
+  let bag = bags[bagName];
+  if(Object.keys(bag).length == 0) return 0;
+
+  let contentCount = 0;
+  for(innerBag in bag) {
+    let num = bag[innerBag];
+    contentCount += num + (num * countBagContents(innerBag));
+  }
+  return contentCount;
 }
