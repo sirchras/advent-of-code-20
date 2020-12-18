@@ -13,10 +13,13 @@ function verifyXMAS(num, preamble) {
   return false;
 }
 
-for(let i = 25; i < input.length; i++) {
-  let preamble = input.slice(i - 25, i);
-  if(!verifyXMAS(input[i], preamble)) {
-    console.log(input[i]);
-    break;
+function findInvalidNum(input) {
+  for(let i = 25; i < input.length; i++) {
+    let preamble = input.slice(i - 25, i);
+    if(!verifyXMAS(input[i], preamble)) {
+      return input[i];
+    }
   }
 }
+
+console.log(findInvalidNum(input));
