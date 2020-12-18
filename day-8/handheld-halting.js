@@ -100,8 +100,8 @@ let fixed = debugInstructions(input);
 console.log(`acc: ${acc}`);
 console.log(`final acc: ${fixed.acc}`);
 
-fixed.visited.forEach(idx => {
-  let instruction = parseInstruction(fixed.input[idx]);
-  // if(instruction.op == "acc")
-  printInstruction(idx, instruction);
-});
+// fixed.visited.forEach(idx => {
+//   let instruction = parseInstruction(fixed.input[idx]);
+//   // if(instruction.op == "acc")
+//   printInstruction(idx, instruction);
+// });
