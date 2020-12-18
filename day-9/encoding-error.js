@@ -22,4 +22,29 @@ function findInvalidNum(input) {
   }
 }
 
-console.log(findInvalidNum(input));
+function findWeaknessSet(target, input) {
+  let weakSet = [];
+  let sum = 0, idx = 0;
+
+  while(idx < input.length) {
+    if(sum == invalidNum) return weakSet;
+
+    if(sum < invalidNum) {
+      sum += input[idx];
+      weakSet.push(input[idx]);
+      idx++;
+    } else {
+      sum -= weakSet.shift();
+    }
+    // console.log(sum);
+  }
+}
+
+let invalidNum = findInvalidNum(input);
+let weakSet = findWeaknessSet(invalidNum, input)
+  .sort((a, b) => a - b);
+let weakness = weakSet[0] + weakSet[weakSet.length-1];
+
+console.log(`invalid num: ${invalidNum}`);
+// console.log(weakSet);
+console.log(`encryption weakness: ${weakness}`);
