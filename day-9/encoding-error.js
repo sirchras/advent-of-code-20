@@ -27,9 +27,9 @@ function findWeaknessSet(target, input) {
   let sum = 0, idx = 0;
 
   while(idx < input.length) {
-    if(sum == invalidNum) return weakSet;
+    if(sum == target) return weakSet;
 
-    if(sum < invalidNum) {
+    if(sum < target) {
       sum += input[idx];
       weakSet.push(input[idx]);
       idx++;
