@@ -2,8 +2,14 @@ const fs = require("fs");
 // const input = fs.readFileSync("./test.txt", "utf-8")
 const input = fs.readFileSync("./input.txt", "utf-8")
   .split("\n").slice(0, -1);
+// [dx,dy]
+const DIR = [
+  [-1,-1], [0,-1], [1,-1],
+  [-1,0],          [1,0],
+  [-1,1],  [0,1],  [1,1],
+];
 
-function inBounds(layout, row, col) {
+function inBounds(row, col, layout = input) {
   return (0 <= row && row < layout.length) &&
     (0 <= col && col < layout[row].length);
 }
@@ -11,13 +17,11 @@ function inBounds(layout, row, col) {
 function countAdjSeats(layout, row, col, condition) {
   let count = 0;
 
-  for(let r = -1; r <= 1; r++) {
-    for(let c = -1; c <= 1; c++) {
-      if(r == 0 && c == 0) continue;
+  for(let i = 0; i < DIR.length; i++) {
+    let [c, r] = DIR[i];
 
-      if(inBounds(layout, row + r, col + c)) {
-        if(layout[row+r][col+c] === condition) count++;
-      }
+    if(inBounds(row + r, col + c)) {
+      if(layout[row+r][col+c] === condition) count++;
     }
   }
 
