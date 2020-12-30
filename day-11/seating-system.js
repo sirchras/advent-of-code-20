@@ -24,23 +24,27 @@ function countAdjSeats(layout, row, col, condition) {
   return count;
 }
 
-function getNewSeatLayout(layout) {
+function seatingModelOne(layout, row, col) {
+  let occupied = countAdjSeats(layout, row, col, "#");
+
+  switch(layout[row][col]) {
+    case "L":
+      if(occupied == 0) return "#";
+    case "#":
+      if(occupied >= 4) return "L";
+    default:
+      return layout[row][col];
+  }
+}
+
+function getNewSeatLayout(layout, seatingModel) {
   let newLayout = [];
 
   for(let row = 0; row < layout.length; row++) {
     let seatRow = layout[row].split("");
 
     for(let col = 0; col < layout[row].length; col++) {
-      let occupied = countAdjSeats(layout, row, col, "#");
-
-      switch(layout[row][col]) {
-        case "L":
-          if(occupied == 0) seatRow[col] = "#";
-          break;
-        case "#":
-          if(occupied >= 4) seatRow[col] = "L";
-          break;
-      }
+      seatRow[col] = seatingModel(layout, row, col);
     }
     newLayout.push(seatRow.join(""));
   }
@@ -52,21 +56,18 @@ function getNewSeatLayout(layout) {
 // size
 function sameSeatLayout(first, second) {
   for(let row = 0; row < first.length; row++) {
-    for(let col = 0; col < first[row].length; col++) {
-      if(first[row][col] !== second[row][col]) 
-        return false;
-    }
+    if(first[row] !== second[row]) return false;
   }
   return true;
 }
 
-function findFinalSeatLayout(layout) {
+function findFinalSeatLayout(layout, seatingModel) {
   let prev, next = layout.slice();
 
   do {
     // console.log(next);
     prev = next;
-    next = getNewSeatLayout(prev);
+    next = getNewSeatLayout(prev, seatingModel);
   } while(!sameSeatLayout(prev, next));
 
   return next;
@@ -84,7 +85,8 @@ function countOccupiedSeats(layout) {
   return count;
 }
 
-let final = findFinalSeatLayout(input);
+// PART 1.
+let final = findFinalSeatLayout(input, seatingModelOne);
 let occupied = countOccupiedSeats(final);
 console.log(occupied);
 
