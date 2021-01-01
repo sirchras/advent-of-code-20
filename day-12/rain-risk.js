@@ -1,49 +1,46 @@
 const fs = require("fs");
-const input = fs.readFileSync("./test.txt", "utf-8")
-// const input = fs.readFileSync("./input.txt", "utf-8")
+// const input = fs.readFileSync("./test.txt", "utf-8")
+const input = fs.readFileSync("./input.txt", "utf-8")
   .split("\n").slice(0, -1)
   .map(itm => itm = {
     act: itm.substring(0, 1),
     val: Number(itm.substring(1))
   });
+const sin = Math.sin, cos = Math.cos, round = Math.round;
 
-function createNewShip() {
-  const CIR = 360;
-  const DIR = { N: 0, E: 90, S: 180, W: 270 };
+function createNewShip(waypoint = {x: 1, y: 0}) {
+  const DIR = {
+    N: {x: 0, y: 1},
+    E: {x: 1, y: 0},
+    S: {x: 0, y: -1},
+    W: {x: -1, y: 0}
+  };
   let x = 0, y = 0;
-  let facing = "E";
 
-  function normalizeAngle(deg) {
-    return ((deg % CIR) + CIR) % CIR;
-  }
-
-  function getNewFacing(deg) {
-    let directions = Object.keys(DIR);
-
-    return directions.find(k => DIR[k] == deg);
+  function degToRad(deg) {
+    return deg * (Math.PI / 180);
   }
 
   let ship = {
     turn: function(deg, clockwise = true) {
       // console.log("turn", deg, clockwise);
-      let turn = (clockwise ? deg : -deg);
-      let curAngle = DIR[this.facing()];
-      let newAngle = normalizeAngle(curAngle + turn);
-      facing = getNewFacing(newAngle);
+      let rot = degToRad((clockwise ? deg : -deg));
+      let x = waypoint.x, y = waypoint.y;
+      let s = round(sin(rot)), c = round(cos(rot));
 
-      return this.facing();
+      waypoint.x = ((x * c) + 0) + ((y * s) + 0);
+      waypoint.y = ((x * -s) + 0) + ((y * c) + 0);
+
+      return this.waypoint();
     },
 
-    move: function(dist, heading = this.facing()) {
+    move: function(dist, heading) {
       // console.log("move", dist, heading);
-      switch(heading) {
-        case "N": case "S":
-          heading == "N" ? y += dist : y -= dist;
-          break;
-        case "E": case "W":
-          heading == "E" ? x += dist : x -= dist;
-          break;
-      }
+      let waypoint = heading ? DIR[heading] :
+        this.waypoint();
+
+      x += (dist * waypoint.x);
+      y += (dist * waypoint.y);
 
       return this.position();
     },
@@ -52,8 +49,8 @@ function createNewShip() {
       return {x, y};
     },
 
-    facing: function() {
-      return facing;
+    waypoint: function() {
+      return waypoint;
     }
   };
 
@@ -84,5 +81,5 @@ function embarkOnVoyage(nav, ship = createNewShip()) {
 let ship = embarkOnVoyage(input);
 let {x, y} = ship.position();
 
-console.log(ship.position());
-console.log(Math.abs(x) + Math.abs(y));
+// console.log(ship.position());
+console.log("PART 1.", Math.abs(x) + Math.abs(y));
