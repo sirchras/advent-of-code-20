@@ -34,6 +34,17 @@ function createNewShip(waypoint = {x: 1, y: 0}) {
       return this.waypoint();
     },
 
+    chart: function(dist, heading) {
+      // console.log("chart", dist, heading);
+      let dir = DIR[heading];
+      let x = waypoint.x, y = waypoint.y;
+
+      waypoint.x = (x + (dir.x * dist));
+      waypoint.y = (y + (dir.y * dist));
+
+      return this.waypoint();
+    },
+
     move: function(dist, heading) {
       // console.log("move", dist, heading);
       let waypoint = heading ? DIR[heading] :
@@ -57,29 +68,58 @@ function createNewShip(waypoint = {x: 1, y: 0}) {
   return ship;
 }
 
-function embarkOnVoyage(nav, ship = createNewShip()) {
-  for(let i = 0; i < nav.length; i++) {
-    let {act, val} = nav[i];
-    let heading;
+function embarkOnVoyage(ins, nav, ship = createNewShip()) {
+  for(let i = 0; i < ins.length; i++) {
+    let {act, val} = ins[i];
 
-    switch(act) {
-      case "L": case "R":
-        ship.turn(val, act == "R");
-        break;
-      case "N": case "E": case "S": case "W":
-        heading = act;
-      case "F":
-        ship.move(val, heading);
-        break;
-    }
+    nav(ship, act, val);
   }
 
   return ship;
 }
 
+
 // PART 1.
-let ship = embarkOnVoyage(input);
+function navigateOne(ship, act, val) {
+  let heading;
+
+  switch(act) {
+    case "L": case "R":
+      ship.turn(val, act == "R");
+      break;
+    case "N": case "E": case "S": case "W":
+      heading = act;
+    case "F":
+      ship.move(val, heading);
+      break;
+  }
+}
+
+let ship = embarkOnVoyage(input, navigateOne);
 let {x, y} = ship.position();
 
 // console.log(ship.position());
 console.log("PART 1.", Math.abs(x) + Math.abs(y));
+
+
+// PART 2.
+function navigateTwo(ship, act, val) {
+  switch(act) {
+    case "L": case "R":
+      ship.turn(val, act == "R");
+      break;
+    case "N": case "E": case "S": case "W":
+      ship.chart(val, act);
+      break;
+    case "F":
+      ship.move(val);
+      break;
+  }
+}
+
+ship = createNewShip({x: 10, y: 1});
+ship = embarkOnVoyage(input, navigateTwo, ship);
+({x, y} = ship.position());
+
+// console.log(ship.position());
+console.log("PART 2.", Math.abs(x) + Math.abs(y));
